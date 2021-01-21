@@ -37,13 +37,7 @@ class MainActivity : AppCompatActivity(),Notes.DataListener, SaveNotes.SavedNote
             commit()
         }
     }
-    override fun passData(title: String?, note: String?, context: Context) {
-        bottom.selectedItemId = R.id.saved
-        if(title!=null && note!=null && Repository.isEdited!=true){
-            Repository.arrayList?.add(Model(title,note))
-            Repository.backup.add(title+"@_`"+note)
-            Repository.isEdited = false
-        }
+    private fun saveData(context: Context){
         val sharedPref = context.getSharedPreferences("SHARE_TITLE",Context.MODE_PRIVATE)
         sharedPref?.let { sp ->
             val editor = sp.edit()
@@ -51,6 +45,15 @@ class MainActivity : AppCompatActivity(),Notes.DataListener, SaveNotes.SavedNote
             editor.apply()
             editor.commit()
         }
+    }
+    override fun passData(title: String?, note: String?, context: Context) {
+        bottom.selectedItemId = R.id.saved
+        if(title!=null && note!=null && Repository.isEdited!=true){
+            Repository.arrayList?.add(Model(title,note))
+            Repository.backup.add(title+"@_`"+note)
+            Repository.isEdited = false
+        }
+        saveData(context)
         makeFragment(SaveNotes())
     }
     override fun goToEditPage(position: Int?) {
@@ -60,5 +63,12 @@ class MainActivity : AppCompatActivity(),Notes.DataListener, SaveNotes.SavedNote
     override fun editNote(position: Int?) {
         bottom.selectedItemId = R.id.create
         makeFragment(Notes.newInstance(position!!))
+    }
+    override fun deleteNote(position: Int?, context: Context) {
+        Repository.arrayList?.removeAt(position!!)
+        Repository.backup.removeAt(position!!)
+        bottom.selectedItemId = R.id.saved
+        makeFragment(SaveNotes())
+        saveData(context)
     }
 }
