@@ -1,2 +1,2 @@
 # MiniNotepad
-A place which saves your notes
+A place which saves your notes.
